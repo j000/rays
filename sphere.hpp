@@ -3,6 +3,7 @@
 
 #include "colour.hpp"
 #include "vector.hpp"
+class Ray;
 
 class Sphere
 {
@@ -10,6 +11,8 @@ public:
 	Vector center;
 	double radius;
 	Colour colour;
+
+	bool intersects(const Ray&);
 };
 
 #endif /* SPHERE_HPP */
