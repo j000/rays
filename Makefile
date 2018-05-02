@@ -37,8 +37,8 @@ WARNINGS += -Wpadded
 CWARNINGS := $(WARNINGS)
 CWARNINGS += -Wstrict-prototypes
 
-CFLAGS := $(CFLAGS) $(CWARNINGS) -std=c11 -O3 -fPIC
-CXXFLAGS := $(CXXFLAGS) $(WARNINGS) -std=c++17 -O3 -fPIC
+CFLAGS := $(CFLAGS) $(CWARNINGS) -std=c11 -O3 -fPIC -g
+CXXFLAGS := $(CXXFLAGS) $(WARNINGS) -std=c++17 -O3 -fPIC -g
 LDFLAGS := -static -static-libgcc $(LDFLAGS)
 # LDFLAGS := $(LDFLAGS)
 LOADLIBES := -Wl,--as-needed -lm -l:libstdc++.a
@@ -86,8 +86,8 @@ run: $(EXE) ## run program
 	@./$(EXE)
 
 .PHONY: debug
-debug: CFLAGS := $(filter-out -O2,$(CFLAGS)) -D_DEBUG -g
-debug: CXXFLAGS := $(filter-out -O2,$(CXXFLAGS)) -D_DEBUG -g
+debug: CFLAGS := $(filter-out -O2,$(CFLAGS)) -D_DEBUG -Og
+debug: CXXFLAGS := $(filter-out -O2,$(CXXFLAGS)) -D_DEBUG -Og
 debug: $(EXE) ## build with debug enabled
 
 .PHONY: debugrun
