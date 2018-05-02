@@ -10,6 +10,10 @@ public:
 	Vector origin;
 	Vector direction;
 
+	Ray(const Vector& _origin, const Vector& _direction) :
+		origin(_origin), direction(_direction)
+	{};
+
 	static Ray create_prime(const unsigned& x, const unsigned& y, const Scene& scene);
 };
 
