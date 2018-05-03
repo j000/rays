@@ -11,7 +11,7 @@ Vector Vector::normalize() const {
 }
 
 double Vector::lengthSquared() const {
-	return x*x + y*y + z*z;
+	return dot(*this);
 }
 
 double Vector::dot(const Vector& v) const {

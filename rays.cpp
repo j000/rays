@@ -11,7 +11,7 @@
 using std::cout;
 
 int main() {
-	Scene scene = {0};
+	Scene scene;
 
 	scene.width = 1600;
 	scene.height = 1200;
@@ -34,8 +34,9 @@ int main() {
 	for (auto y = 0u; y < scene.height; ++y)
 		for (auto x = 0u; x < scene.width; ++x) {
 			auto ray = Ray::create_prime(x, y, scene);
+			double dist = scene.sphere.intersects(ray);
 
-			if (scene.sphere.intersects(ray)) {
+			if (dist != INFINITY) {
 				bmp[54 + x * 3 + y * (scene.width * 3 + pad)] = 0xFF * scene.sphere.colour.blue;
 				bmp[54 + x * 3 + y * (scene.width * 3 + pad) + 1] = 0xFF * scene.sphere.colour.green;
 				bmp[54 + x * 3 + y * (scene.width * 3 + pad) + 2] = 0xFF * scene.sphere.colour.red;

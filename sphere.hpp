@@ -12,7 +12,7 @@ public:
 	double radius;
 	Colour colour;
 
-	bool intersects(const Ray&);
+	double intersects(const Ray&);
 };
 
 #endif /* SPHERE_HPP */
