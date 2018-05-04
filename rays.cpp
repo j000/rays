@@ -39,9 +39,9 @@ int main() {
 			}
 
 			if (max_dist != INFINITY) {
-				bmp[54 + x * 3 + y * (scene.width * 3 + pad)] = 0xFF * closest->colour.blue;
-				bmp[54 + x * 3 + y * (scene.width * 3 + pad) + 1] = 0xFF * closest->colour.green;
-				bmp[54 + x * 3 + y * (scene.width * 3 + pad) + 2] = 0xFF * closest->colour.red;
+				bmp[54 + x * 3 + (scene.height - 1 - y) * (scene.width * 3 + pad)] = 0xFF * closest->colour.blue;
+				bmp[54 + x * 3 + (scene.height - 1 - y) * (scene.width * 3 + pad) + 1] = 0xFF * closest->colour.green;
+				bmp[54 + x * 3 + (scene.height - 1 - y) * (scene.width * 3 + pad) + 2] = 0xFF * closest->colour.red;
 			}
 		}
 
