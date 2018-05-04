@@ -17,15 +17,8 @@ int main() {
 	scene.height = 1200;
 	scene.fov = 90; // vertical
 
-	scene.sphere.center.x = 0.;
-	scene.sphere.center.y = 0.;
-	scene.sphere.center.z = -sqrt(2.);
-
-	scene.sphere.radius = 1.;
-
-	scene.sphere.colour.red = 0.;
-	scene.sphere.colour.green = 1.;
-	scene.sphere.colour.blue = 0.;
+	scene.objects.push_back(new Sphere(0., 0., -sqrt(2.), 1., Colour(0., 1., 0.)));
+	scene.objects.push_back(new Sphere(1., 0., -sqrt(2.), 1., Colour(0., 0., 1.)));
 
 	auto bmp = create_bitmap(nullptr, scene.width, scene.height);
 
@@ -34,12 +27,21 @@ int main() {
 	for (auto y = 0u; y < scene.height; ++y)
 		for (auto x = 0u; x < scene.width; ++x) {
 			auto ray = Ray::create_prime(x, y, scene);
-			double dist = scene.sphere.intersects(ray);
+			double max_dist = INFINITY;
+			Object* closest = nullptr;
 
-			if (dist != INFINITY) {
-				bmp[54 + x * 3 + y * (scene.width * 3 + pad)] = 0xFF * scene.sphere.colour.blue;
-				bmp[54 + x * 3 + y * (scene.width * 3 + pad) + 1] = 0xFF * scene.sphere.colour.green;
-				bmp[54 + x * 3 + y * (scene.width * 3 + pad) + 2] = 0xFF * scene.sphere.colour.red;
+			for (const auto i: scene.objects) {
+				double dist = i->intersects(ray);
+				if (dist < max_dist) {
+					max_dist = dist;
+					closest = i;
+				}
+			}
+
+			if (max_dist != INFINITY) {
+				bmp[54 + x * 3 + y * (scene.width * 3 + pad)] = 0xFF * closest->colour.blue;
+				bmp[54 + x * 3 + y * (scene.width * 3 + pad) + 1] = 0xFF * closest->colour.green;
+				bmp[54 + x * 3 + y * (scene.width * 3 + pad) + 2] = 0xFF * closest->colour.red;
 			}
 		}
 

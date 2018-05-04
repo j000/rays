@@ -4,7 +4,12 @@
 
 #include <cmath>
 
-double Sphere::intersects(const Ray& ray) {
+Sphere::Sphere(const double& x, const double& y, const double& z, const double& r, const Colour& c) :
+	Object(c), center(x, y, z), radius(r)
+{
+}
+
+double Sphere::intersects(const Ray& ray) const {
 	/* variables names follow Figure 1:
 	 * https://www.scratchapixel.com/lessons/3d-basic-rendering/minimal-ray-tracer-rendering-simple-shapes/ray-sphere-intersection */
 

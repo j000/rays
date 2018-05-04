@@ -3,16 +3,19 @@
 
 #include "colour.hpp"
 #include "vector.hpp"
-class Ray;
+#include "object.hpp"
 
-class Sphere
+class Sphere :
+	public Object
 {
 public:
 	Vector center;
 	double radius;
-	Colour colour;
 
-	double intersects(const Ray&);
+	Sphere() = default;
+	Sphere(const double&, const double&, const double&, const double&, const Colour&);
+
+	double intersects(const Ray&) const override;
 };
 
 #endif /* SPHERE_HPP */
