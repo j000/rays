@@ -5,6 +5,8 @@
 
 #include "scene.hpp"
 #include "ray.hpp"
+#include "object.hpp"
+#include "sphere.hpp"
 
 #include <cmath>
 

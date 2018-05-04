@@ -1,10 +1,10 @@
 #ifndef SCENE_HPP
 #define SCENE_HPP
 
-#include "sphere.hpp"
-
 #include <cstddef>
 #include <vector>
+
+class Object;
 
 using ::std::size_t;
 
