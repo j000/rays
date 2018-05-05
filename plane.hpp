@@ -11,7 +11,7 @@ public:
 	Vector origin;
 	Vector normal;
 
-	Plane(const double&, const double&, const double&, const double&, const double&, const double&, const Colour&);
+	Plane(const double, const double, const double, const double, const double, const double, const Colour&);
 
 	double intersects(const Ray&) const override;
 };

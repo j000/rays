@@ -13,7 +13,7 @@ public:
 	double radius;
 
 	Sphere() = default;
-	Sphere(const double&, const double&, const double&, const double&, const Colour&);
+	Sphere(const double, const double, const double, const double, const Colour&);
 
 	double intersects(const Ray&) const override;
 };

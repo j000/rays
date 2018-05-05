@@ -4,7 +4,7 @@
 
 #include <cmath>
 
-Plane::Plane(const double& x1, const double& y1, const double& z1, const double& x2, const double& y2, const double& z2, const Colour& c) :
+Plane::Plane(const double x1, const double y1, const double z1, const double x2, const double y2, const double z2, const Colour& c) :
 	Object(c), origin(x1, y1, z1), normal(x2, y2, z2)
 {
 }

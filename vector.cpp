@@ -2,6 +2,7 @@
 
 #include <cmath>
 
+__attribute__((target_clones("avx2","sse4","sse2","default")))
 Vector Vector::normalize() const {
 	double length2 = lengthSquared();
 	if (length2 <= 0)
@@ -22,6 +23,6 @@ double Vector::operator* (const Vector& v) const {
 	return x * v.x + y * v.y + z * v.z;
 }
 
-Vector Vector::operator- (const Vector&	v) const {
+Vector Vector::operator- (const Vector& v) const {
 	return Vector(x - v.x, y - v.y, z - v.z);
 }

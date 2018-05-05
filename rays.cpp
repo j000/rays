@@ -18,10 +18,10 @@ int main() {
 
 	scene.width = 1600;
 	scene.height = 1200;
-	scene.fov = 90; // vertical
+	scene.fov = 75; // vertical
 
-	scene.objects.push_back(new Sphere(0., 0., -sqrt(2.), 1., Colour(0., 1., 0.)));
-	scene.objects.push_back(new Sphere(1., 0., -sqrt(2.), 1., Colour(0., 0., 1.)));
+	scene.objects.push_back(new Sphere(0., 0., -3., 1., Colour(0., 1., 0.)));
+	scene.objects.push_back(new Sphere(1., 1., -3., 1.1, Colour(0., 0., 1.)));
 	scene.objects.push_back(new Plane(0., -2., 0., 0., -1., 0., Colour(.5, .25, .25)));
 
 	auto bmp = create_bitmap(nullptr, scene.width, scene.height);
@@ -46,6 +46,10 @@ int main() {
 				bmp[54 + x * 3 + (scene.height - 1 - y) * (scene.width * 3 + pad)] = 0xFF * closest->colour.blue;
 				bmp[54 + x * 3 + (scene.height - 1 - y) * (scene.width * 3 + pad) + 1] = 0xFF * closest->colour.green;
 				bmp[54 + x * 3 + (scene.height - 1 - y) * (scene.width * 3 + pad) + 2] = 0xFF * closest->colour.red;
+			} else {
+				bmp[54 + x * 3 + (scene.height - 1 - y) * (scene.width * 3 + pad)] = 0xFF;
+				bmp[54 + x * 3 + (scene.height - 1 - y) * (scene.width * 3 + pad) + 1] = 0xCC;
+				bmp[54 + x * 3 + (scene.height - 1 - y) * (scene.width * 3 + pad) + 2] = 0x99;
 			}
 		}
 

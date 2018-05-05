@@ -37,8 +37,8 @@ WARNINGS += -Wpadded
 CWARNINGS := $(WARNINGS)
 CWARNINGS += -Wstrict-prototypes
 
-CFLAGS := $(CFLAGS) $(CWARNINGS) -std=c11 -O3 -fPIC -g
-CXXFLAGS := $(CXXFLAGS) $(WARNINGS) -std=c++17 -O3 -fPIC -g
+CFLAGS := $(CFLAGS) $(CWARNINGS) -std=c11 -O2 -fPIC -g -ggdb
+CXXFLAGS := $(CXXFLAGS) $(WARNINGS) -std=c++17 -O2 -fPIC -g -ggdb
 LDFLAGS := -static -static-libgcc $(LDFLAGS)
 # LDFLAGS := $(LDFLAGS)
 LOADLIBES := -Wl,--as-needed -lm -l:libstdc++.a
