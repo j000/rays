@@ -28,14 +28,23 @@ WARNINGS += -Wpointer-arith
 WARNINGS += -Wcast-qual
 # most of the time you don't want this
 WARNINGS += -Werror=implicit-function-declaration
-# why warning for comments inside comments
+# why warning for comments inside comments?
 WARNINGS += -Wno-comment
 
 # warn when struct can be better
 WARNINGS += -Wpadded
 
+# implicit conversions that may alter a value
+WARNINGS += -Wconversion
+# "float" is implicitly promoted to "double"
+WARNINGS += -Wdouble-promotion
+
+# C only
 CWARNINGS := $(WARNINGS)
 CWARNINGS += -Wstrict-prototypes
+
+# the new-style casts are less vulnerable to unintended effects
+WARNINGS += -Wold-style-cast
 
 CFLAGS := $(CFLAGS) $(CWARNINGS) -std=c11 -O2 -fPIC -g -ggdb
 CXXFLAGS := $(CXXFLAGS) $(WARNINGS) -std=c++17 -O2 -fPIC -g -ggdb

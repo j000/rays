@@ -11,6 +11,8 @@
 
 #include <cmath>
 
+static constexpr double infinity = std::numeric_limits<double>::infinity();
+
 using std::cout;
 
 int main() {
@@ -31,7 +33,7 @@ int main() {
 	for (auto y = 0u; y < scene.height; ++y)
 		for (auto x = 0u; x < scene.width; ++x) {
 			auto ray = Ray::create_prime(x, y, scene);
-			double max_dist = INFINITY;
+			double max_dist = infinity;
 			Object* closest = nullptr;
 
 			for (const auto i: scene.objects) {
@@ -42,10 +44,13 @@ int main() {
 				}
 			}
 
-			if (max_dist != INFINITY) {
+			if (max_dist != infinity) {
+				#pragma GCC diagnostic push
+				#pragma GCC diagnostic ignored "-Wfloat-conversion"
 				bmp[54 + x * 3 + (scene.height - 1 - y) * (scene.width * 3 + pad)] = 0xFF * closest->colour.blue;
 				bmp[54 + x * 3 + (scene.height - 1 - y) * (scene.width * 3 + pad) + 1] = 0xFF * closest->colour.green;
 				bmp[54 + x * 3 + (scene.height - 1 - y) * (scene.width * 3 + pad) + 2] = 0xFF * closest->colour.red;
+				#pragma GCC diagnostic pop
 			} else {
 				bmp[54 + x * 3 + (scene.height - 1 - y) * (scene.width * 3 + pad)] = 0xFF;
 				bmp[54 + x * 3 + (scene.height - 1 - y) * (scene.width * 3 + pad) + 1] = 0xCC;
@@ -57,8 +62,8 @@ int main() {
 
 	{
 		std::ofstream file_out;
-		file_out.open("output.bmp");
-		file_out.write((const char*)bmp.data(), bmp.size());
+		file_out.open("output.bmp", std::ios::binary | std::ios::out);
+		file_out.write(reinterpret_cast<const char*>(bmp.data()), bmp.size());
 		file_out.close();
 	}
 }
