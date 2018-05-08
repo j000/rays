@@ -3,16 +3,19 @@
 
 #include "colour.hpp"
 class Ray;
+class Vector;
 
 class Object
 {
 public:
 	Colour colour;
+	double albedo;
 
-	Object(const Colour& c): colour(c) {};
+	Object(const Colour& c, const double a): colour(c), albedo(a) {};
 	virtual ~Object() {};
 
 	virtual double intersects(const Ray&) const = 0;
+	virtual Vector surface_normal(const Vector&) const = 0;
 };
 
 #endif /* OBJECT_HPP */

@@ -4,10 +4,13 @@
 
 #include <cmath>
 
-Sphere::Sphere(const double x, const double y, const double z, const double r, const Colour& c) :
-	Object(c), center(x, y, z), radius(r)
+Sphere::Sphere(const double x, const double y, const double z, const double r, const Colour& c, const double a) :
+	Object(c, a), center(x, y, z), radius(r)
 {
 }
+
+#define likely(x) __builtin_expect((x),1)
+#define unlikely(x) __builtin_expect((x),0)
 
 __attribute__((target_clones("avx2","sse4","sse2","default")))
 double Sphere::intersects(const Ray& ray) const {
@@ -17,24 +20,28 @@ double Sphere::intersects(const Ray& ray) const {
 	Vector line = center - ray.origin;
 	double tca = line.dot(ray.direction);
 
-	if (tca < 0.) // we are behind sphere
+	if (unlikely(tca < 0.)) // we are behind sphere
 		return INFINITY;
 
 	double dist2 = line.lengthSquared() - tca * tca;
 	double radius2 = radius * radius;
 
-	if (dist2 > radius2) // we are not intersecting shpere
+	if (likely(dist2 > radius2)) // we are not intersecting shpere
 		return INFINITY;
 
 	double thc = sqrt(radius2 - dist2);
 
 	double t0 = tca - thc;
-	if (t0 > 0.) // otherwise it's behind camera
+	if (likely(t0 > 0.)) // otherwise it's behind camera
 		return t0;
 
 	double t1 = tca + thc;
-	if (t1 > 0.) // is it always true?
+	if (likely(t1 > 0.)) // otherwise it's behind camera
 		return t1;
 
 	return INFINITY;
+}
+
+Vector Sphere::surface_normal(const Vector& hit_point) const {
+	return (hit_point - center).normalize();
 }

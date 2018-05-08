@@ -20,8 +20,10 @@ public:
 	double lengthSquared() const;
 	double dot(const Vector&) const;
 
-	double operator* (const Vector&) const;
+	Vector operator- () const;
 	Vector operator- (const Vector&) const;
+	Vector operator+ (const Vector&) const;
+	Vector operator* (const double) const;
 };
 
 #endif /* VECTOR_HPP */
