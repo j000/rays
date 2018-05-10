@@ -1,16 +1,16 @@
 #include <iostream>
 #include <fstream>
 #include <algorithm>
+#include <cmath>
 
 #include "bmpwriter.hpp"
 
 #include "scene.hpp"
-#include "ray.hpp"
 #include "object.hpp"
 #include "sphere.hpp"
 #include "plane.hpp"
 
-#include <cmath>
+class Ray;
 
 static constexpr double infinity = std::numeric_limits<double>::infinity();
 static constexpr double PI = std::atan(1.) * 4;
@@ -41,7 +41,7 @@ int main() {
 
 	for (auto y = 0u; y < scene.height; ++y)
 		for (auto x = 0u; x < scene.width; ++x) {
-			auto ray = Ray::create_prime(x, y, scene);
+			auto ray = scene.create_prime(x, y);
 			double max_dist = infinity;
 			Object* closest = nullptr;
 

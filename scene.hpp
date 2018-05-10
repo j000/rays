@@ -5,6 +5,7 @@
 #include <vector>
 
 #include "light.hpp"
+#include "ray.hpp"
 
 class Object;
 
@@ -17,6 +18,8 @@ public:
 	double fov;
 	std::vector<Object*> objects;
 	Light light;
+
+	Ray create_prime(const unsigned&, const unsigned&);
 };
 
 #endif /* SCENE_HPP */
