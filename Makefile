@@ -1,4 +1,5 @@
-SRC ?= rays.cpp $(filter-out rays.cpp,$(wildcard *.cpp))
+SRC := rays.cpp
+SRC += $(filter-out $(SRC),$(wildcard *.cpp))
 
 ####################
 
@@ -7,7 +8,7 @@ SRC ?= rays.cpp $(filter-out rays.cpp,$(wildcard *.cpp))
 
 SHELL := /bin/sh
 MKDIR ?= mkdir
-RMDIR ?= rmdir
+RMDIR ?= $(RM) -d
 
 # enable a lot of warnings and then some more
 WARNINGS := -Wall -Wextra
@@ -70,15 +71,9 @@ EXE := $(basename $(firstword $(SRC)))
 SRCDIR ?= .
 TMPDIR ?= .tmp
 
-OBJ := $(addprefix $(TMPDIR)/, \
-	$(addsuffix .o, $(SRC)) \
-)
+OBJ := $(patsubst %.cpp,$(TMPDIR)/%.o,$(SRC))
 
-DEP := $(addprefix $(TMPDIR)/, \
-	$(addsuffix .d, $(SRC)) \
-)
-
-CFLAGS += -I$(SRCDIR)
+DEPFLAGS := -MMD -MP
 CXXFLAGS += -I$(SRCDIR)
 
 # be silent unless VERBOSE
@@ -95,7 +90,6 @@ run: $(EXE) ## run program
 	@./$(EXE)
 
 .PHONY: debug
-debug: CFLAGS := $(filter-out -O2,$(CFLAGS)) -D_DEBUG -Og
 debug: CXXFLAGS := $(filter-out -O2,$(CXXFLAGS)) -D_DEBUG -Og
 debug: $(EXE) ## build with debug enabled
 
@@ -104,33 +98,18 @@ debugrun: debug run ## run debug version
 
 $(EXE): $(OBJ)
 	@echo "$(COLOR)Link $^ -> $@$(RESET)"
-# almost default rule
-	$(LINK.o) $(OUTPUT_OPTION) $^ $(LOADLIBES) $(LDLIBS)
+# default rule
+	$(LINK.o) $^ $(LOADLIBES) $(LDLIBS) $(OUTPUT_OPTION)
 
-$(TMPDIR)/%.c.o: $(TMPDIR)/%.c.d
-	@echo "$(COLOR)Compile $(SRCDIR)/$*.c -> $(TMPDIR)/$*.c.o$(RESET)"
-	$(COMPILE.c) $(OUTPUT_OPTION) $(SRCDIR)/$*.c
-
-$(TMPDIR)/%.cpp.o: $(TMPDIR)/%.cpp.d
-	@echo "$(COLOR)Compile $(SRCDIR)/$*.cpp -> $(TMPDIR)/$*.cpp.o$(RESET)"
-	$(COMPILE.cc) $(OUTPUT_OPTION) $(SRCDIR)/$*.cpp
-
-$(TMPDIR)/%.c.d: $(SRCDIR)/%.c
-	@echo "$(COLOR)Dependencies $(SRCDIR)/$*.c -> $(TMPDIR)/$*.c.d$(RESET)"
-	$(CC) $(DEPFLAGS) -MM -MT '$$(TMPDIR)/$*.c.o' -MF $@ $<
-	sed -i 's,^\([^:]\+.o\):,\1 $$(TMPDIR)/$*.c.d:,' $@
-
-$(TMPDIR)/%.cpp.d: $(SRCDIR)/%.cpp
-	@echo "$(COLOR)Dependencies $(SRCDIR)/$*.cpp -> $(TMPDIR)/$*.cpp.d$(RESET)"
-	$(CXX) $(DEPFLAGS) -MM -MT '$$(TMPDIR)/$*.cpp.o' -MF $@ $<
-	sed -i 's,^\([^:]\+.o\):,\1 $$(TMPDIR)/$*.c.d:,' $@
+$(TMPDIR)/%.o: $(SRCDIR)/%.cpp # $(TMPDIR)/%.d
+	@echo "$(COLOR)Compile $(SRCDIR)/$*.cpp -> $(TMPDIR)/$*.o$(RESET)"
+	$(COMPILE.cpp) $(DEPFLAGS) $(OUTPUT_OPTION) $<
 
 # include dependencies
--include $(wildcard $(DEP))
+-include $(wildcard $(OBJ:.o=.d))
 
 # depend on directory
 $(OBJ): | $(TMPDIR)/.keepme
-$(DEP): | $(TMPDIR)/.keepme
 
 # create directory
 $(TMPDIR)/.keepme:
@@ -145,19 +124,15 @@ clean: mostlyclean ## delete everything this Makefile created
 .PHONY: mostlyclean
 mostlyclean: ## delete everything created, leave executable
 	@echo "$(COLOR)Cleaning$(RESET)"
-ifneq ($(wildcard $(TMPDIR)),)
 	-$(RM) $(OBJ)
-	-$(RM) $(DEP)
+	-$(RM) $(OBJ:.o=.d)
 	-$(RM) $(TMPDIR)/.keepme
 	-$(RMDIR) $(TMPDIR)
-endif
 
 .PHONY: forceclean
 forceclean: ## force delete all created temporary folders
 	@echo "$(COLOR)Force cleaning$(RESET)"
-ifneq ($(wildcard $(TMPDIR)),)
 	-$(RM) -r $(TMPDIR)
-endif
 
 .PHONY: help
 help: ## show this help
