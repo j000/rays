@@ -13,7 +13,7 @@ RMDIR ?= $(RM) -d
 # enable a lot of warnings and then some more
 WARNINGS := -Wall -Wextra
 # be more strict
-ifeq ($(shell $(CC) -dumpversion),4.7)
+ifeq ($(shell expr $(shell $(CC) -dumpversion) "<" "4.8"),1)
         # welcome to 2012
         # -Wpedantic is available since gcc 4.8
         WARNINGS += -pedantic
@@ -40,18 +40,30 @@ WARNINGS += -Wconversion
 # "float" is implicitly promoted to "double"
 WARNINGS += -Wdouble-promotion
 
-# C only
-CWARNINGS := $(WARNINGS)
-CWARNINGS += -Wstrict-prototypes
-
 # the new-style casts are less vulnerable to unintended effects
 WARNINGS += -Wold-style-cast
 
-CFLAGS := $(CFLAGS) $(CWARNINGS) -std=c11 -O2 -fPIC -g -ggdb
-CXXFLAGS := $(CXXFLAGS) $(WARNINGS) -std=c++17 -O2 -fPIC -g -ggdb
-LDFLAGS := -static -static-libgcc $(LDFLAGS)
-# LDFLAGS := $(LDFLAGS)
-LOADLIBES := -Wl,--as-needed -lm -l:libstdc++.a
+CXXFLAGS := $(CXXFLAGS) $(WARNINGS) -std=c++17 -O2 -pipe
+####################
+LDFLAGS := $(LDFLAGS)
+LDFLAGS += -static-libgcc -Wl,-R.
+LOADLIBES := -Wl,--as-needed
+LOADLIBES += -lm
+LOADLIBES += -l:libstdc++.a
+####################
+# no runtime type information
+CXXFLAGS += -fno-rtti
+####################
+# probably best option
+CXXFLAGS += -mtune=native
+# use SSE2
+CXXFLAGS += -mfpmath=sse -msse2 -ffast-math
+# preserve debug info
+CXXFLAGS += -g -ggdb
+####################
+# LTO
+CXXFLAGS += -flto
+####################
 
 # ncurses
 # NCURSES := ncurses
@@ -99,9 +111,9 @@ debugrun: debug run ## run debug version
 $(EXE): $(OBJ)
 	@echo "$(COLOR)Link $^ -> $@$(RESET)"
 # default rule
-	$(LINK.o) $^ $(LOADLIBES) $(LDLIBS) $(OUTPUT_OPTION)
+	$(LINK.cpp) $^ $(LOADLIBES) $(LDLIBS) $(OUTPUT_OPTION)
 
-$(TMPDIR)/%.o: $(SRCDIR)/%.cpp # $(TMPDIR)/%.d
+$(TMPDIR)/%.o: $(SRCDIR)/%.cpp Makefile # $(TMPDIR)/%.d
 	@echo "$(COLOR)Compile $(SRCDIR)/$*.cpp -> $(TMPDIR)/$*.o$(RESET)"
 	$(COMPILE.cpp) $(DEPFLAGS) $(OUTPUT_OPTION) $<
 
