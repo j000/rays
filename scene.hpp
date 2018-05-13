@@ -4,10 +4,10 @@
 #include <cstddef>
 #include <vector>
 
-#include "light.hpp"
 #include "ray.hpp"
 
 class Object;
+class Light;
 
 using ::std::size_t;
 
@@ -17,7 +17,7 @@ public:
 	unsigned width, height;
 	double fov;
 	std::vector<Object*> objects;
-	Light light;
+	std::vector<Light*> lights;
 
 	Ray create_prime(const unsigned&, const unsigned&);
 	std::pair<double, Object*> trace(const Ray&);

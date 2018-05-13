@@ -7,8 +7,13 @@ public:
 	double red, green, blue;
 
 	Colour() = default;
-	Colour(const double& r, const double& g, const double& b) :
-		red(r), green(g), blue(b) {};
+	Colour(const double, const double, const double);
+
+	Colour operator* (const double) const;
+	Colour operator* (const Colour&) const;
+	friend Colour operator*(const double, const Colour&);
+
+	Colour& operator+=(const Colour&);
 };
 
 #endif /* COLOUR_HPP */

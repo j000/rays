@@ -7,8 +7,7 @@
 static constexpr double infinity = std::numeric_limits<double>::infinity();
 
 Plane::Plane(const double x1, const double y1, const double z1, const double x2, const double y2, const double z2, const Colour& c, const double a) :
-	Object(c, a), origin(x1, y1, z1), normal(x2, y2, z2)
-{
+	Object(c, a), origin(x1, y1, z1), normal(x2, y2, z2) {
 }
 
 double Plane::intersects(const Ray& ray) const {

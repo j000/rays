@@ -11,8 +11,7 @@ static constexpr double infinity = std::numeric_limits<double>::infinity();
 #define unlikely(x) __builtin_expect((x),0)
 
 Sphere::Sphere(const double x, const double y, const double z, const double r, const Colour& c, const double a) :
-	Object(c, a), center(x, y, z), radius(r)
-{
+	Object(c, a), center(x, y, z), radius(r) {
 }
 
 __attribute__((target_clones("avx,default")))

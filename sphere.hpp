@@ -12,7 +12,7 @@ public:
 	Vector center;
 	double radius;
 
-	Sphere() = default;
+	Sphere() = delete;
 	Sphere(const double, const double, const double, const double, const Colour&, const double);
 
 	double intersects(const Ray&) const override;

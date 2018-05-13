@@ -10,6 +10,7 @@
 #include "scene.hpp"
 #include "sphere.hpp"
 #include "plane.hpp"
+#include "light.hpp"
 
 class Ray;
 
@@ -26,12 +27,11 @@ int main() {
 	scene.height = 1200;
 	scene.fov = 75; // vertical
 
-	scene.light.colour = Colour(1., 1., 1.);
-	scene.light.intensity = 20.;
-	scene.light.direction = Vector(-0.25, -1., -0.6).normalize();
+	scene.lights.push_back(new Light(-.75, -1., -0.6, 20., Colour(1., 1., 1.)));
+	scene.lights.push_back(new Light(.75, -1., -0.6, 5., Colour(1., .9, .5)));
 
 	scene.objects.push_back(new Sphere(0., 0., -3., 1., Colour(0., 1., 0.), 0.18));
-	scene.objects.push_back(new Sphere(1., 1., -3., 1.1, Colour(0., 0., 1.), 0.58));
+	scene.objects.push_back(new Sphere(1., 1., -3., 1.41, Colour(0., 0., 1.), 0.45));
 	scene.objects.push_back(new Plane(0., -2., 0., 0., -1., 0., Colour(.5, .25, .25), 0.13));
 
 	auto bmp = create_bitmap(nullptr, scene.width, scene.height);
@@ -49,24 +49,28 @@ int main() {
 			if (max_dist != infinity) {
 				auto hit_point = ray.origin + (ray.direction * max_dist);
 
-				auto shadow_ray = Ray(hit_point, -scene.light.direction);
-				auto shadow_dist = scene.trace(shadow_ray).first;
+				Colour colour(0, 0, 0);
 
-				double intensity = 0.;
-				if (shadow_dist == infinity) {
-					Vector normal = closest->surface_normal(hit_point);
-					double light_power = normal.dot(-scene.light.direction) * scene.light.intensity;
-					intensity = clamp(light_power * closest->albedo / PI, 0., 1.);
+				for (const auto light: scene.lights) {
+					auto shadow_ray = Ray(hit_point, -light->direction);
+					auto shadow_dist = scene.trace(shadow_ray).first;
+
+					if (shadow_dist == infinity) {
+						Vector normal = closest->surface_normal(hit_point);
+						double light_power = normal.dot(-light->direction) * light->intensity;
+						double intensity = clamp(light_power * closest->albedo / PI, 0., 1.);
+						colour += intensity * closest->colour * light->colour;
+					}
 				}
 
 				#pragma GCC diagnostic push
 				#pragma GCC diagnostic ignored "-Wfloat-conversion"
 				bmp[54 + x * 3 + y * (scene.width * 3 + pad)]
-						= 0xFF * intensity * closest->colour.blue * scene.light.colour.blue;
+						= 0xFF * colour.blue;
 				bmp[54 + x * 3 + y * (scene.width * 3 + pad) + 1]
-						= 0xFF * intensity * closest->colour.green * scene.light.colour.green;
+						= 0xFF * colour.green;
 				bmp[54 + x * 3 + y * (scene.width * 3 + pad) + 2]
-						= 0xFF * intensity * closest->colour.red * scene.light.colour.red;
+						= 0xFF * colour.red;
 				#pragma GCC diagnostic pop
 			} else {
 				bmp[54 + x * 3 + y * (scene.width * 3 + pad)] = 0xFF;
