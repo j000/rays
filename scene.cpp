@@ -2,13 +2,11 @@
 
 #include "scene.hpp"
 
-static constexpr double PI = atan(1.) * 4;
-static_assert(3.141592 < PI);
-static_assert(3.141593 > PI);
+static constexpr double PI = 3.14159265358979323846264338327950288419716939937510582097494459230781640628620899862803482534211706798214;
 
 Ray Scene::create_prime(const unsigned& x, const unsigned& y) {
     double sensor_x = (0.5 + x) / width * 2. - 1.;
-    double sensor_y = 1. - (0.5 + y) / height * 2.;
+    double sensor_y = (0.5 + y) / height * 2. - 1.;
 
     double aspect_ratio = 1. * width / height;
     sensor_x *= aspect_ratio;

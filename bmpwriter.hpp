@@ -6,9 +6,8 @@
 
 static std::vector<uint8_t> create_bitmap(const uint8_t* rgb, const size_t& width, const size_t& height)
 {
-	static_assert(sizeof(unsigned char) == 1, "unsigned char should be 8-bit");
-	static_assert(std::is_same<std::uint8_t,unsigned char>::value, "unsigned char is not uint8_t");
-	((void)rgb);
+	static_assert(sizeof(uint8_t) == 1, "uint8_t should be 8-bit");
+	((void)rgb); // unused for now
 
 	uint8_t pad = (4 - (width & 3)) & 3; // padding to 4 bytes
 	size_t size = 54 + height * (3 * width + pad);
@@ -17,7 +16,7 @@ static std::vector<uint8_t> create_bitmap(const uint8_t* rgb, const size_t& widt
 	out[1] = 'M';
 	// 2 - 5: file size in bytes
 	for (auto i = 0u; i < 4; ++i) {
-		out[2 + i] = (size >> (8 * i)) % 256;
+		out[2 + i] = static_cast<uint8_t>((size >> (8 * i)) % 256);
 	}
 	// 6 - 9: reserved, 0
 	// 10 - 13: offset, our header size
@@ -26,11 +25,11 @@ static std::vector<uint8_t> create_bitmap(const uint8_t* rgb, const size_t& widt
 	out[14] = 40;
 	// 18 - 21: width of image
 	for (auto i = 0u; i < 4; ++i) {
-		out[18 + i] = (width >> (8 * i)) % 256;
+		out[18 + i] = static_cast<uint8_t>((width >> (8 * i)) % 256);
 	}
 	// 22 - 25: height of image
 	for (auto i = 0u; i < 4; ++i) {
-		out[22 + i] = (height >> (8 * i)) % 256;
+		out[22 + i] = static_cast<uint8_t>((height >> (8 * i)) % 256);
 	}
 	out[26] = 1; // color planes
 	out[28] = 24; // bites per pixel

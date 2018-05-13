@@ -2,11 +2,25 @@
 
 #include <cmath>
 
-__attribute__((target_clones("avx2","sse4","sse2","default")))
+#define likely(x) __builtin_expect((x),1)
+#define unlikely(x) __builtin_expect((x),0)
+
+constexpr double zero = 1e-13;
+
+#ifndef __has_cpp_attribute         // Optional of course.
+  #define __has_cpp_attribute(x) 0  // Compatibility with non-clang compilers.
+#endif
+
+__attribute__((target_clones("avx,default")))
 Vector Vector::normalize() const {
 	double length2 = lengthSquared();
-	if (length2 <= 0)
-		return Vector();
+
+	if (unlikely(length2 <= zero))
+		return Vector(0, 0, 0);
+
+	if (unlikely(length2 - 1. <= zero))
+		return Vector(*this);
+
 	double norm = 1. / sqrt(length2);
 	return Vector(x * norm, y * norm, z * norm);
 }

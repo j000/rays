@@ -14,7 +14,7 @@ using ::std::size_t;
 class Scene
 {
 public:
-	unsigned int width, height;
+	unsigned width, height;
 	double fov;
 	std::vector<Object*> objects;
 	Light light;

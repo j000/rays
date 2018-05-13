@@ -2,20 +2,18 @@
 #include <fstream>
 #include <algorithm>
 #include <cmath>
+#include <limits>
 
 #include "bmpwriter.hpp"
 
 #include "scene.hpp"
-#include "object.hpp"
 #include "sphere.hpp"
 #include "plane.hpp"
 
 class Ray;
 
 static constexpr double infinity = std::numeric_limits<double>::infinity();
-static constexpr double PI = std::atan(1.) * 4;
-static_assert(3.141592 < PI);
-static_assert(3.141593 > PI);
+static constexpr double PI = 3.14159265358979323846264338327950288419716939937510582097494459230781640628620899862803482534211706798214;
 
 using std::cout;
 using std::clamp;
@@ -60,17 +58,17 @@ int main() {
 
 				#pragma GCC diagnostic push
 				#pragma GCC diagnostic ignored "-Wfloat-conversion"
-				bmp[54 + x * 3 + (scene.height - 1 - y) * (scene.width * 3 + pad)]
+				bmp[54 + x * 3 + y * (scene.width * 3 + pad)]
 						= 0xFF * intensity * closest->colour.blue * scene.light.colour.blue;
-				bmp[54 + x * 3 + (scene.height - 1 - y) * (scene.width * 3 + pad) + 1]
+				bmp[54 + x * 3 + y * (scene.width * 3 + pad) + 1]
 						= 0xFF * intensity * closest->colour.green * scene.light.colour.green;
-				bmp[54 + x * 3 + (scene.height - 1 - y) * (scene.width * 3 + pad) + 2]
+				bmp[54 + x * 3 + y * (scene.width * 3 + pad) + 2]
 						= 0xFF * intensity * closest->colour.red * scene.light.colour.red;
 				#pragma GCC diagnostic pop
 			} else {
-				bmp[54 + x * 3 + (scene.height - 1 - y) * (scene.width * 3 + pad)] = 0xFF;
-				bmp[54 + x * 3 + (scene.height - 1 - y) * (scene.width * 3 + pad) + 1] = 0xCC;
-				bmp[54 + x * 3 + (scene.height - 1 - y) * (scene.width * 3 + pad) + 2] = 0x99;
+				bmp[54 + x * 3 + y * (scene.width * 3 + pad)] = 0xFF;
+				bmp[54 + x * 3 + y * (scene.width * 3 + pad) + 1] = 0xCC;
+				bmp[54 + x * 3 + y * (scene.width * 3 + pad) + 2] = 0x99;
 			}
 		}
 
@@ -79,7 +77,7 @@ int main() {
 	{
 		std::ofstream file_out;
 		file_out.open("output.bmp", std::ios::binary | std::ios::out);
-		file_out.write(reinterpret_cast<const char*>(bmp.data()), bmp.size());
+		file_out.write(reinterpret_cast<const char*>(bmp.data()), static_cast<long>(bmp.size()));
 		file_out.close();
 	}
 }
