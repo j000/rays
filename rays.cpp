@@ -3,6 +3,7 @@
 #include <algorithm>
 #include <cmath>
 #include <limits>
+#include <tuple>
 
 #include "bmpwriter.hpp"
 
@@ -43,18 +44,20 @@ int main() {
 			double max_dist = infinity;
 			Object* closest = nullptr;
 
-			for (const auto i: scene.objects) {
-				double dist = i->intersects(ray);
-				if (dist < max_dist) {
-					max_dist = dist;
-					closest = i;
-				}
-			}
+			std::tie(max_dist, closest) = scene.trace(ray);
 
 			if (max_dist != infinity) {
-				Vector normal = closest->surface_normal(ray.origin + (ray.direction * max_dist));
-				double light_power = normal.dot(-scene.light.direction) * scene.light.intensity;
-				double intensity = clamp(light_power * closest->albedo / PI, 0., 1.);
+				auto hit_point = ray.origin + (ray.direction * max_dist);
+
+				auto shadow_ray = Ray(hit_point, -scene.light.direction);
+				auto shadow_dist = scene.trace(shadow_ray).first;
+
+				double intensity = 0.;
+				if (shadow_dist == infinity) {
+					Vector normal = closest->surface_normal(hit_point);
+					double light_power = normal.dot(-scene.light.direction) * scene.light.intensity;
+					intensity = clamp(light_power * closest->albedo / PI, 0., 1.);
+				}
 
 				#pragma GCC diagnostic push
 				#pragma GCC diagnostic ignored "-Wfloat-conversion"

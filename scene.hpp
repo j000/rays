@@ -20,6 +20,7 @@ public:
 	Light light;
 
 	Ray create_prime(const unsigned&, const unsigned&);
+	std::pair<double, Object*> trace(const Ray&);
 };
 
 #endif /* SCENE_HPP */
