@@ -9,8 +9,6 @@
 class Object;
 class Light;
 
-using ::std::size_t;
-
 class Scene
 {
 public:
