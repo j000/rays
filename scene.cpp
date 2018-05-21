@@ -1,8 +1,8 @@
-#include <cmath>
-#include <utility>
-
 #include "scene.hpp"
 #include "object.hpp"
+
+#include <cmath>
+#include <utility>
 
 using std::make_pair;
 

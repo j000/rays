@@ -1,8 +1,8 @@
-#include <cmath>
-#include <limits>
-
 #include "plane.hpp"
 #include "ray.hpp"
+
+#include <cmath>
+#include <limits>
 
 static constexpr double infinity = std::numeric_limits<double>::infinity();
 

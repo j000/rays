@@ -1,9 +1,9 @@
-#include <cmath>
-#include <limits>
-
 #include "sphere.hpp"
 #include "vector.hpp"
 #include "ray.hpp"
+
+#include <cmath>
+#include <limits>
 
 static constexpr double infinity = std::numeric_limits<double>::infinity();
 

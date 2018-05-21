@@ -1,16 +1,16 @@
-#include <iostream>
-#include <fstream>
-#include <algorithm>
-#include <cmath>
-#include <limits>
-#include <tuple>
-
 #include "bmpwriter.hpp"
 
 #include "scene.hpp"
 #include "sphere.hpp"
 #include "plane.hpp"
 #include "light.hpp"
+
+#include <iostream>
+#include <fstream>
+#include <algorithm>
+#include <cmath>
+#include <limits>
+#include <tuple>
 
 class Ray;
 

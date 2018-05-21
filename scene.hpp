@@ -1,10 +1,10 @@
 #ifndef SCENE_HPP
 #define SCENE_HPP
 
+#include "ray.hpp"
+
 #include <cstddef>
 #include <vector>
-
-#include "ray.hpp"
 
 class Object;
 class Light;
