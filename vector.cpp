@@ -1,19 +1,20 @@
 #include "vector.hpp"
 
+#ifndef PRECOMPILED
+#include "common.hpp"
 #include <cmath>
-
-#define likely(x) __builtin_expect((x),1)
-#define unlikely(x) __builtin_expect((x),0)
-
-constexpr double zero = 1e-13;
-
-#ifndef __has_cpp_attribute         // Optional of course.
-  #define __has_cpp_attribute(x) 0  // Compatibility with non-clang compilers.
 #endif
+
+Vector::Vector(const double _x, const double _y, const double _z):
+	x(_x), y(_y), z(_z) {
+}
+
+Vector::Vector(const Point& p): x(p.x), y(p.y), z(p.z) {
+}
 
 __attribute__((target_clones("avx,default")))
 Vector Vector::normalize() const {
-	double length2 = lengthSquared();
+	double length2 = length_squared();
 
 	if (unlikely(length2 <= zero))
 		return Vector(0, 0, 0);

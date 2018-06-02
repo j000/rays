@@ -1,6 +1,9 @@
 #ifndef VECTOR_HPP
 #define VECTOR_HPP
 
+#ifndef PRECOMPILED
+#include <type_traits>
+#endif
 class Vector
 {
 public:

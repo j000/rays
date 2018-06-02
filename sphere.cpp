@@ -2,13 +2,11 @@
 #include "vector.hpp"
 #include "ray.hpp"
 
+#ifndef PRECOMPILED
+#include "common.hpp"
 #include <cmath>
 #include <limits>
-
-static constexpr double infinity = std::numeric_limits<double>::infinity();
-
-#define likely(x) __builtin_expect((x),1)
-#define unlikely(x) __builtin_expect((x),0)
+#endif
 
 Sphere::Sphere(const double x, const double y, const double z, const double r, const Colour& c, const double a) :
 	Object(c, a), center(x, y, z), radius(r) {

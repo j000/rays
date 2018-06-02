@@ -1,9 +1,11 @@
 #ifndef BMPWRITER_HPP
 #define BMPWRITER_HPP
 
+#ifndef PRECOMPILED
 #include <cstdint>
 #include <vector>
 #include <endian.h>
+#endif
 
 static std::vector<uint8_t> create_bitmap(const uint8_t* rgb, const unsigned& width, const unsigned& height) {
 	static_assert(sizeof(uint8_t) == 1, "uint8_t should be 8-bit");

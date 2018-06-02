@@ -5,20 +5,20 @@
 #include "plane.hpp"
 #include "light.hpp"
 
+#ifndef PRECOMPILED
+#include "common.hpp"
 #include <iostream>
 #include <fstream>
 #include <algorithm>
 #include <cmath>
 #include <limits>
 #include <tuple>
+#endif
 
 class Ray;
 
-static constexpr double infinity = std::numeric_limits<double>::infinity();
-static constexpr double PI = 3.14159265358979323846264338327950288419716939937510582097494459230781640628620899862803482534211706798214;
 
-using std::cout;
-using std::clamp;
+using std::cout, std::clamp;
 
 int main() {
 	Scene scene;

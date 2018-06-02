@@ -3,8 +3,10 @@
 
 #include "ray.hpp"
 
+#ifndef PRECOMPILED
 #include <cstddef>
 #include <vector>
+#endif
 
 class Object;
 class Light;

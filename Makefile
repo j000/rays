@@ -5,6 +5,8 @@ EXE := $(basename $(firstword $(SRC)))
 SRCDIR ?= .
 TMPDIR ?= .tmp
 PGODIR ?= .pgo
+PRECOMPILE_HEADER ?= 1
+VERBOSE ?= 0
 ########################################
 SHELL := /bin/sh
 MKDIR ?= mkdir
@@ -14,11 +16,11 @@ RMDIR ?= $(RM) -d
 WARNINGS := -Wall -Wextra
 # be more strict
 ifeq ($(shell expr $(shell $(CC) -dumpversion) "<" "4.8"),1)
-        # welcome to 2012
-        # -Wpedantic is available since gcc 4.8
-        WARNINGS += -pedantic
+  # welcome to 2012
+  # -Wpedantic is available since gcc 4.8
+  WARNINGS += -pedantic
 else
-        WARNINGS += -Wpedantic
+  WARNINGS += -Wpedantic
 endif
 # shadowing variables, are you sure?
 WARNINGS += -Wshadow
@@ -40,7 +42,7 @@ WARNINGS += -Wdouble-promotion
 WARNINGS += -Wold-style-cast
 
 ########################################
-CXXFLAGS := $(CXXFLAGS) $(WARNINGS) -std=c++17 -O2 -pipe
+CXXFLAGS := $(CXXFLAGS) $(WARNINGS) -std=c++17 -O3 -pipe
 # no runtime type information
 CXXFLAGS += -fno-rtti
 # LTO
@@ -53,10 +55,14 @@ CXXFLAGS += -mfpmath=sse -msse2 -ffast-math
 CXXFLAGS += -g -ggdb
 ########################################
 LDFLAGS := $(LDFLAGS)
-# LDFLAGS += -static -static-libgcc
-LDFLAGS += -static-libgcc -Wl,-R.
+LDFLAGS += -static-libgcc
+ifdef STATIC
+  LDFLAGS += -static
+endif
+LDFLAGS += -Wl,-R.
 LOADLIBES := -Wl,--as-needed
-LOADLIBES += -l:libm.a
+# LOADLIBES += -l:libm.a
+# LOADLIBES += -lm
 LOADLIBES += -l:libstdc++.a
 ########################################
 # generate better data for perf
@@ -75,13 +81,14 @@ endif
 OBJ := $(patsubst %.cpp,$(TMPDIR)/%.o,$(SRC))
 PGOOBJ := $(patsubst %.cpp,$(PGODIR)/%.o,$(SRC))
 ########################################
-DEPFLAGS := -MMD -MP
+DEPFLAGS := -MD -MP
 CXXFLAGS += -I$(SRCDIR)
 
-
+LD := ld.gold
+CXXFLAGS += -fuse-ld=gold
 
 # be silent unless VERBOSE
-ifndef VERBOSE
+ifeq ($(VERBOSE),0)
   .SILENT: ;
 endif
 
@@ -93,29 +100,37 @@ all: $(EXE) ## build executable
 run: $(EXE) ## run program
 	@./$(EXE)
 
+########################################
+
 .PHONY: debug
-debug: CXXFLAGS := $(filter-out -O2,$(CXXFLAGS)) -D_DEBUG -Og
+debug: CXXFLAGS += -D_DEBUG -Og
 debug: $(EXE) ## build with debug enabled
 
 .PHONY: debugrun
 debugrun: debug run ## run debug version
 
-$(EXE): private CXXFLAGS += -fprofile-dir=$(PGODIR) -fprofile-use -fprofile-correction
+########################################
+
 $(EXE): $(OBJ)
 	@echo "$(COLOR)Link $^ -> $@$(RESET)"
 # default rule
 	$(LINK.cpp) $^ $(LOADLIBES) $(LDLIBS) $(OUTPUT_OPTION)
 
-$(TMPDIR)/%.o: private CXXFLAGS += -fprofile-dir=$(PGODIR) -fprofile-use -fprofile-correction
-$(TMPDIR)/%.o: $(SRCDIR)/%.cpp Makefile
+$(TMPDIR)/%.o: $(SRCDIR)/%.cpp
 	@echo "$(COLOR)Compile $(SRCDIR)/$*.cpp -> $(TMPDIR)/$*.o$(RESET)"
 	$(COMPILE.cpp) $(DEPFLAGS) $(OUTPUT_OPTION) $<
 
+########################################
 .PHONY: pgo pgo-generate pgo-run
-pgo: clean pgo-generate all
+pgo: pgo-generate all
 pgo-run: pgo-generate run
 
 PGO-GENERATE-FLAGS := -fprofile-generate
+$(EXE) $(OBJ): private CXXFLAGS += -fprofile-dir=$(PGODIR) -fprofile-use -fprofile-correction
+
+ifneq ($(wildcard $(PGODIR)/*.gcda),)
+  $(OBJ): $(PGOOBJ:.o=.gcda)
+endif
 
 pgo-generate: $(PGODIR)/$(EXE)
 	@echo "$(COLOR)Generating profile...$(RESET)"
@@ -131,23 +146,41 @@ $(PGODIR)/%.o: $(SRCDIR)/%.cpp Makefile
 	@echo "$(COLOR)Compile $(SRCDIR)/$*.cpp -> $(PGODIR)/$*.o$(RESET)"
 	$(COMPILE.cpp) $(OUTPUT_OPTION) $<
 
+########################################
+# precompiled header
+HEADER := $(TMPDIR)/precompiled.hpp
+
+ifeq ($(PRECOMPILE_HEADER),1)
+$(OBJ) $(PGOOBJ): private CXXFLAGS += -Winvalid-pch -DPRECOMPILED=1 -idirafter $(TMPDIR) -include $(HEADER)
+$(HEADER): | $(TMPDIR)
+$(OBJ) $(PGOOBJ): $(HEADER).gch
+
+$(HEADER): $(wildcard $(SRCDIR)/*.cpp $(SRCDIR)/*.hpp)
+	@echo "$(COLOR)Prepare header $@$(RESET)"
+	sed -n -e '/^#ifndef PRECOMPILED$$/,/^#endif$$/ {/^#ifndef PRECOMPILED$$/d; /^#endif$$/d; p}' $^ > $@
+
+$(HEADER).gch: $(HEADER)
+	@echo "$(COLOR)Precompile header $< -> $@$(RESET)"
+	$(COMPILE.cpp) $(OUTPUT_OPTION) $<
+endif
+
+########################################
 # include dependencies
 -include $(wildcard $(OBJ:.o=.d))
 
 # depend on directory
-$(OBJ): | $(TMPDIR)/.keepme
-$(PGOOBJ): | $(PGODIR)/.keepme
-$(PGOOBJ:.o=.gcda): | $(PGODIR)/.keepme
+$(OBJ): Makefile | $(TMPDIR)
+$(PGOOBJ): | $(PGODIR)
+$(PGOOBJ:.o=.gcda):
 
 # create directory
-$(TMPDIR)/.keepme:
+$(TMPDIR):
 	-$(MKDIR) $(TMPDIR)
-	touch $@
 
-$(PGODIR)/.keepme:
+$(PGODIR):
 	-$(MKDIR) $(PGODIR)
-	touch $@
 
+########################################
 # delete stuff
 .PHONY: clean
 clean: mostlyclean ## delete everything this Makefile created
@@ -156,14 +189,17 @@ clean: mostlyclean ## delete everything this Makefile created
 .PHONY: mostlyclean
 mostlyclean: ## delete everything created, leave executable
 	@echo "$(COLOR)Cleaning$(RESET)"
-	-$(RM) $(TMPDIR)/.keepme $(OBJ) $(OBJ:.o=.d)
-	-$(RM) $(PGODIR)/.keepme $(PGOOBJ) $(PGOOBJ:.o=.d) $(PGOOBJ:.o=.gcda) $(PGODIR)/$(EXE)
+	-$(RM) $(OBJ) $(OBJ:.o=.d) $(HEADER).gch $(HEADER)
+	-$(RM) $(PGOOBJ) $(PGOOBJ:.o=.d) $(PGOOBJ:.o=.gcda) $(PGODIR)/$(EXE)
 	-$(RMDIR) $(TMPDIR) $(PGODIR)
 
 .PHONY: forceclean
 forceclean: ## force delete all created temporary folders
 	@echo "$(COLOR)Force cleaning$(RESET)"
 	-$(RM) -r $(TMPDIR)
+	-$(RM) -r $(PGODIR)
+
+########################################
 
 .PHONY: help
 help: ## show this help

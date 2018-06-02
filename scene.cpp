@@ -1,13 +1,14 @@
 #include "scene.hpp"
 #include "object.hpp"
 
+#ifndef PRECOMPILED
+#include "common.hpp"
 #include <cmath>
 #include <utility>
+#endif
 
-using std::make_pair;
+using std::pair, std::make_pair;
 
-static constexpr double infinity = std::numeric_limits<double>::infinity();
-static constexpr double PI = 3.14159265358979323846264338327950288419716939937510582097494459230781640628620899862803482534211706798214;
 
 Ray Scene::create_prime(const unsigned& x, const unsigned& y) {
     double sensor_x = (0.5 + x) / width * 2. - 1.;

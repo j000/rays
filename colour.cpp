@@ -1,6 +1,8 @@
 #include "colour.hpp"
 
+#ifndef PRECOMPILED
 #include <algorithm>
+#endif
 
 Colour::Colour(const double r, const double g, const double b) :
 	red(std::clamp(r, 0., 1.)), green(std::clamp(g, 0., 1.)), blue(std::clamp(b, 0., 1.))
