@@ -3,8 +3,7 @@
 
 #include "vector.hpp"
 
-class Ray
-{
+class Ray {
 public:
 	Point origin;
 	Vector direction;
