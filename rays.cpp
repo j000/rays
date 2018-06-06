@@ -42,6 +42,12 @@ int main() {
 		new Sphere(1., 1., -3., 1.41, Colour(1., 0., 0.), 0.45)
 	);
 	scene.add(
+		new Translation(
+			new Sphere(1., 1., -3., 1.41, Colour(1., 0., 0.), 0.45),
+			Vector(-2, 0.1, -1)
+		)
+	);
+	scene.add(
 		new Plane(0., -2., 0., 0., -1., 0., Colour(.761, .698, .502) * 0.6,
 		0.4)
 	);

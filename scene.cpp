@@ -98,18 +98,18 @@ void Scene::render(const std::string filename) const {
 								= normal.dot(-light->direction)
 								* light->intensity;
 							double intensity = clamp(
-									light_power * closest->albedo / PI,
+									light_power * closest->albedo() / PI,
 									0.,
 									1.);
 							tmp += intensity
-								* closest->colour * light->colour;
+								* closest->colour() * light->colour;
 						}
 
 						colour += 1. / antialias / antialias * tmp;
 					}
 
 					// TODO: ambient light
-					colour += .1 / antialias / antialias * closest->colour;
+					colour += .1 / antialias / antialias * closest->colour();
 				}
 			bmp[54 + x * 3 + y * (width * 3 + pad)]
 				= static_cast<uint8_t>(0xFF * colour.blue);
