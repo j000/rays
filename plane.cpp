@@ -28,6 +28,6 @@ double Plane::intersects(const Ray& ray) const {
 	return dist;
 }
 
-Vector Plane::surface_normal(const Vector&) const {
+Vector Plane::surface_normal(const Point&) const {
 	return -normal;
 }

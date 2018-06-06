@@ -21,7 +21,7 @@ Ray Scene::create_prime(const unsigned& x, const unsigned& y) {
     sensor_x *= sensor_fov;
     sensor_y *= sensor_fov;
 
-    return Ray(Vector(), Vector(sensor_x, sensor_y, -1.0).normalize());
+	return Ray(Point(), Vector(sensor_x, sensor_y, -1.).normalize());
 }
 
 std::pair<double, Object*> Scene::trace(const Ray& ray) {

@@ -9,14 +9,14 @@ class Sphere :
 	public Object
 {
 public:
-	Vector center;
+	Point center;
 	double radius;
 
 	Sphere() = delete;
 	Sphere(const double, const double, const double, const double, const Colour&, const double);
 
 	double intersects(const Ray&) const override;
-	Vector surface_normal(const Vector&) const override;
+	Vector surface_normal(const Point&) const override;
 };
 
 #endif /* SPHERE_HPP */

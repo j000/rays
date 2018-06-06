@@ -8,13 +8,13 @@ class Plane :
 	public Object
 {
 public:
-	Vector origin;
+	Point origin;
 	Vector normal;
 
 	Plane(const double, const double, const double, const double, const double, const double, const Colour&, const double);
 
 	double intersects(const Ray&) const override;
-	Vector surface_normal(const Vector&) const override;
+	Vector surface_normal(const Point&) const override;
 };
 
 #endif /* PLANE_HPP */

@@ -4,6 +4,7 @@
 #include "colour.hpp"
 class Ray;
 class Vector;
+class Point;
 
 class Object
 {
@@ -15,7 +16,7 @@ public:
 	virtual ~Object() {};
 
 	virtual double intersects(const Ray&) const = 0;
-	virtual Vector surface_normal(const Vector&) const = 0;
+	virtual Vector surface_normal(const Point&) const = 0;
 };
 
 #endif /* OBJECT_HPP */
