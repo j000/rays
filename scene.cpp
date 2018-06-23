@@ -60,7 +60,7 @@ Scene& Scene::add(Object* stuff) {
 void Scene::render(const std::string filename) const {
 	auto bmp = create_bitmap(nullptr, width, height);
 
-	uint8_t pad = (4 - (width & 3)) & 3;
+	const uint8_t pad = (4 - (width & 3)) & 3;
 
 	for (auto y = 0u; y < height; ++y)
 		for (auto x = 0u; x < width; ++x) {
@@ -166,7 +166,7 @@ Ray Scene::create_prime(
 	return Ray(Point(), Vector(sensor_x, sensor_y, -1.).normalize());
 }
 
-pair<double, Object*> Scene::trace(const Ray& ray) const {
+pair<double, Object*> Scene::trace(Ray& ray) const {
 	double max_dist = infinity;
 	Object* closest = nullptr;
 

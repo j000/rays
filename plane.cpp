@@ -19,7 +19,7 @@ Plane::Plane(
 ): Object(c, a), origin(x1, y1, z1), normal(x2, y2, z2) {
 }
 
-double Plane::intersects(const Ray& ray) const {
+double Plane::intersects(Ray& ray) const {
 	double denom = normal.dot(ray.direction);
 
 	if (denom <= 0.)

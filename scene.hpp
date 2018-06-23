@@ -68,7 +68,7 @@ private:
 	double fov;
 
 	Ray create_prime(const unsigned, const unsigned, const unsigned, const unsigned) const;
-	std::pair<double, Object*> trace(const Ray&) const;
+	std::pair<double, Object*> trace(Ray&) const;
 };
 
 #endif /* SCENE_HPP */
