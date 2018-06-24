@@ -57,11 +57,14 @@ Scene& Scene::add(Object* stuff) {
 	return *this;
 }
 
+__attribute__((target_clones("avx,default")))
+__attribute__((flatten))
 void Scene::render(const std::string filename) const {
 	auto bmp = create_bitmap(nullptr, width, height);
 
 	const uint8_t pad = (4 - (width & 3)) & 3;
 
+	#pragma omp parallel for collapse(2)
 	for (auto y = 0u; y < height; ++y)
 		for (auto x = 0u; x < width; ++x) {
 			Colour colour(0, 0, 0);
@@ -124,8 +127,10 @@ void Scene::render(const std::string filename) const {
 	{
 		std::ofstream file_out;
 		file_out.open(filename, std::ios::binary | std::ios::out);
-		file_out.write(reinterpret_cast<const char*>(bmp.data()),
-			static_cast<long>(bmp.size()));
+		file_out.write(
+			reinterpret_cast<const char*>(bmp.data()),
+			static_cast<long>(bmp.size())
+		);
 		file_out.close();
 	}
 }
@@ -135,8 +140,10 @@ Ray Scene::create_prime(
 		const unsigned aa_x, const unsigned aa_y
 	) const {
 
-	double sensor_x = ((0.5 + aa_x) / antialias + x) / width * 2. - 1.; // x mapped to [-1, 1]
-	double sensor_y = ((0.5 + aa_y) / antialias + y) / height * 2. - 1.; // y mapped to [-1, 1]
+	// x mapped to [-1, 1]
+	double sensor_x = ((0.5 + aa_x) / antialias + x) / width * 2. - 1.;
+	// y mapped to [-1, 1]
+	double sensor_y = ((0.5 + aa_y) / antialias + y) / height * 2. - 1.;
 
 	double aspect = 1. * width / height;
 	if (aspect > 1.)

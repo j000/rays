@@ -53,11 +53,15 @@ CXXFLAGS += -mtune=native
 CXXFLAGS += -mfpmath=sse -msse2 -ffast-math
 # preserve debug info
 CXXFLAGS += -g -ggdb
+# OpenMP
+CXXFLAGS += -fopenmp
 ########################################
 LDFLAGS := $(LDFLAGS)
 LDFLAGS += -static-libgcc
 ifdef STATIC
   LDFLAGS += -static
+  # needed (why?) for openmp + lto
+  LDFLAGS += -Wl,--allow-multiple-definition
 endif
 LDFLAGS += -Wl,-R.
 LOADLIBES := -Wl,--as-needed
