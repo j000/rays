@@ -19,7 +19,7 @@ Sphere::Sphere(
 }
 
 __attribute__((target_clones("avx,default")))
-double Sphere::intersects(Ray& ray) const {
+double Sphere::intersects(const Ray& ray) const {
 	/* variables names follow Figure 1:
 	 * https://www.scratchapixel.com/lessons/3d-basic-rendering/minimal-ray-tracer-rendering-simple-shapes/ray-sphere-intersection */
 

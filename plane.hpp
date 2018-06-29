@@ -28,7 +28,7 @@ public:
 		return _albedo;
 	}
 
-	double intersects(Ray&) const override;
+	double intersects(const Ray&) const override;
 	Vector surface_normal(const Point&) const override;
 };
 

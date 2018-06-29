@@ -16,7 +16,7 @@ public:
 
 	virtual Colour colour() const = 0;
 	virtual double albedo() const = 0;
-	virtual double intersects(Ray&) const = 0;
+	virtual double intersects(const Ray&) const = 0;
 	virtual Vector surface_normal(const Point&) const = 0;
 protected:
 	Colour _colour;
@@ -41,15 +41,13 @@ public:
 		return child->albedo();
 	}
 
-	double intersects(Ray& ray) const override {
-		Ray tmp(ray);
-		tmp.origin -= oper;
+	double intersects(const Ray& ray) const override {
+		const Ray tmp(ray.origin - oper, ray.direction);
 		return child->intersects(tmp);
 	}
 
 	Vector surface_normal(const Point& p) const override {
-		Point tmp(p);
-		tmp -= oper;
+		const Point tmp(p - oper);
 		return child->surface_normal(tmp);
 	}
 };
