@@ -23,6 +23,7 @@ Scene& Scene::set_width(const unsigned w) {
 	if (w == 0)
 		throw invalid_argument("Width cannot be zero");
 	width = w;
+	aspect_ratio = width * 1. / height;
 	return *this;
 }
 
@@ -30,6 +31,7 @@ Scene& Scene::set_height(const unsigned h) {
 	if (h == 0)
 		throw invalid_argument("Height cannot be zero");
 	height = h;
+	aspect_ratio = width * 1. / height;
 	return *this;
 }
 
@@ -145,11 +147,10 @@ Ray Scene::create_prime(
 	// y mapped to [-1, 1]
 	double sensor_y = ((0.5 + aa_y) / antialias + y) / height * 2. - 1.;
 
-	double aspect = 1. * width / height;
-	if (aspect > 1.)
-		sensor_y /= aspect; // y depends on aspect ratio
+	if (aspect_ratio > 1.)
+		sensor_y /= aspect_ratio; // y depends on aspect ratio
 	else
-		sensor_x *= aspect; // x depends on aspect ratio
+		sensor_x *= aspect_ratio; // x depends on aspect ratio
 
 	// fisheye
 	if (fov > PI / 4) {

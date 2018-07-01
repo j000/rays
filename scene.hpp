@@ -46,7 +46,7 @@ private:
 
 class Scene {
 public:
-	Scene(): width(800), height(600), antialias(1) {
+	Scene(): width(800), height(600), aspect_ratio(width * 1. / height), antialias(1) {
 		set_fov(75.);
 	}
 
@@ -64,6 +64,7 @@ private:
 	std::vector<Light*> lights;
 
 	PrecalculatedInverse<unsigned> width, height;
+	PrecalculatedInverse<double> aspect_ratio;
 	PrecalculatedInverse<unsigned> antialias;
 	double fov;
 
