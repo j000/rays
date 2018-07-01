@@ -73,7 +73,7 @@ private:
 	PrecalculatedInverse<unsigned> width, height;
 	PrecalculatedInverse<double> aspect_ratio;
 	PrecalculatedInverse<unsigned> antialias;
-	double fov;
+	double fov, tan_fov;
 
 	Ray create_prime(const unsigned, const unsigned, const unsigned, const unsigned) const;
 	std::pair<double, Object*> trace(Ray&) const;

@@ -46,6 +46,7 @@ Scene& Scene::set_fov(const double angle) {
 	if (angle <= 0. || angle > 180.)
 		throw invalid_argument("FOV angle needs to be in range (0, 180]");
 	fov = PI / 180. * angle * 0.5;
+	tan_fov = tan(fov);
 	return *this;
 }
 
@@ -168,8 +169,8 @@ Ray Scene::create_prime(
 	}
 
 	// rectilinear
-	sensor_x *= tan(fov);
-	sensor_y *= tan(fov);
+	sensor_x *= tan_fov;
+	sensor_y *= tan_fov;
 
 	return Ray(Point(), Vector(sensor_x, sensor_y, -1.).normalize());
 }
