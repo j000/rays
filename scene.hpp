@@ -18,14 +18,15 @@ class Color;
 
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wpadded"
-template <typename T>
+template <typename T, typename D = double,
+	std::enable_if_t<std::is_floating_point_v<D>>* = nullptr>
 class PrecalculatedInverse {
 public:
 	inline PrecalculatedInverse(T a = T(0)):
-		value_inverse(double(1)/a), value(a) {};
+		value_inverse(D(1)/a), value(a) {};
 
 	inline T& operator=(const T& rhs) {
-		value_inverse = double(1) / rhs;
+		value_inverse = D(1) / rhs;
 		return value = rhs;
 	}
 
@@ -35,11 +36,17 @@ public:
 
 	template <typename F,
 		std::enable_if_t <std::is_floating_point_v<F>>* = nullptr>
-	friend inline F operator/(F lhs, PrecalculatedInverse<T> rhs) {
+	friend inline F operator/(F lhs, const PrecalculatedInverse<T>& rhs) {
 		return lhs * rhs.value_inverse;
 	}
+
+	template <typename F,
+		std::enable_if_t <std::is_floating_point_v<F>>* = nullptr>
+	friend inline F& operator/=(F& lhs, const PrecalculatedInverse<T>& rhs) {
+		return lhs *= rhs.value_inverse;
+	}
 private:
-	double value_inverse;
+	D value_inverse;
 	T value;
 };
 #pragma GCC diagnostic pop
